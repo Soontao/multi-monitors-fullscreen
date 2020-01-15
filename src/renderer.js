@@ -1,18 +1,40 @@
 const { remote } = require('electron')
-const { BrowserWindow, dialog } = remote
+const { BrowserWindow, dialog, screen } = remote
+const { min, max, } = require("lodash")
 
 var button = document.getElementById("b")
 
 button.onclick = async () => {
   var url = document.getElementById("u").value
+  var displays = screen.getAllDisplays();
+  var minX = 0;
+  var maxX = 0;
+  var minY = 0;
+  var maxY = 0;
+
+  displays.forEach(display => {
+    minX = min([display.bounds.x, minX])
+    maxX = max([display.bounds.x + display.bounds.width, maxX])
+    minY = min([display.bounds.y, minY])
+    maxY = max([display.bounds.y + display.bounds.height, maxY])
+  })
+
+  console.log(displays)
+
+
   if (url) {
     var subWindow = new BrowserWindow({
-      width: 800,
-      height: 600,
+      center: true,
       frame: false
     })
     try {
       await subWindow.loadURL(url)
+      subWindow.setBounds({
+        x: minX,
+        y: minY,
+        width: Math.abs(maxX - minX),
+        height: Math.abs(maxY - minY),
+      })
     } catch (error) {
       // url loading failed
       subWindow.close()
