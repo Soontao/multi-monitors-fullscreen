@@ -19,9 +19,6 @@ button.onclick = async () => {
     maxY = max([display.bounds.y + display.bounds.height, maxY])
   })
 
-  console.log(displays)
-
-
   if (url) {
     var subWindow = new BrowserWindow({
       center: true,
@@ -29,6 +26,7 @@ button.onclick = async () => {
     })
     try {
       await subWindow.loadURL(url)
+      // only resize could make page cross screens
       subWindow.setBounds({
         x: minX,
         y: minY,
